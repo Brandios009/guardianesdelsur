@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { supabase } from "@/integrations/supabase/client";
-import bossLajas from "@/assets/boss-lajas.png";
+import bossLajas from "@/assets/boss-lajas.gif";
 import bossCocha from "@/assets/boss-cocha.png";
 import bossGaleras from "@/assets/boss-galeras.png";
 import bossJuanambu from "@/assets/boss-juanambu.png";

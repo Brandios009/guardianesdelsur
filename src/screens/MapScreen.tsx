@@ -3,12 +3,17 @@ import { Colibri } from "@/components/Colibri";
 import { ArrowLeft, Lock, Swords, Sparkles, MapPin } from "lucide-react";
 import landscapeDecadente from "@/assets/landscape-decadente.jpg";
 import landscapeVital from "@/assets/landscape-vital.jpg";
+import lajasIcon from "@/assets/map-icons/lajas.png";
+import cochaIcon from "@/assets/map-icons/cocha.png";
+import galerasIcon from "@/assets/map-icons/galeras.png";
+import juanambuIcon from "@/assets/map-icons/juanambu.png";
 import { useState } from "react";
 
 export const MapScreen = () => {
   const locations = useGame((s) => s.locations);
   const setActive = useGame((s) => s.setActiveLocation);
   const setScreen = useGame((s) => s.setScreen);
+  const setGameUrl = useGame((s) => s.setGameUrl);
   const player = useGame((s) => s.player);
   const unlocked = useGame((s) => s.unlocked);
   const showNotif = useGame((s) => s.showNotif);
@@ -32,9 +37,16 @@ export const MapScreen = () => {
       ? "Aprendiz"
       : "Novato";
 
+  const iconMap: Record<LocationKey, string> = {
+    lajas: lajasIcon,
+    cocha: cochaIcon,
+    galeras: galerasIcon,
+    juanambu: juanambuIcon,
+  };
 
   const onSelect = (loc: GuardianLocation) => {
     setActive(loc.key);
+    setGameUrl(null);
     setScreen("loading");
   };
 
@@ -138,15 +150,6 @@ export const MapScreen = () => {
             />
             <rect x="6" y="6" width="788" height="488" fill="url(#grid)" opacity="0.35" />
 
-            {/* Nariño silhouette - very faint background reference */}
-            <path
-              d="M 200 90 Q 170 95 145 115 Q 125 135 120 160 Q 118 180 130 195 Q 145 205 165 208 Q 185 210 200 205 L 210 240 Q 215 260 225 268 Q 240 275 260 275 Q 275 273 285 265 Q 293 255 295 240 L 298 220 Q 305 195 308 170 Q 310 145 305 125 Q 298 105 285 95 Q 270 85 250 83 Q 230 82 210 85 L 200 90 M 308 170 Q 320 160 340 158 Q 365 156 378 168 Q 388 180 388 200 Q 386 220 375 230 Q 360 238 345 235 Q 328 230 320 215 Q 315 195 315 175 Q 314 172 308 170 Z"
-              fill="hsl(var(--surface))"
-              stroke="hsl(var(--accent))"
-              strokeWidth="2"
-              opacity="0.08"
-            />
-
             {/* Decorative compass */}
             <g transform="translate(720, 60)">
               <circle r="28" fill="hsl(var(--background))" stroke="hsl(var(--border))" strokeWidth="2" />
@@ -168,6 +171,7 @@ export const MapScreen = () => {
               <MapNode
                 key={loc.key}
                 loc={loc}
+                icon={iconMap[loc.key]}
                 onClick={() => onSelect(loc)}
                 onHover={setHovered}
                 hovered={hovered === loc.key}
@@ -224,11 +228,13 @@ export const MapScreen = () => {
 
 const MapNode = ({
   loc,
+  icon,
   onClick,
   onHover,
   hovered,
 }: {
   loc: GuardianLocation;
+  icon: string;
   onClick: () => void;
   onHover: (k: LocationKey | null) => void;
   hovered: boolean;
@@ -248,41 +254,41 @@ const MapNode = ({
     >
       {/* Pixel pin (octagon-ish) */}
       <polygon
-        points="-12,-6 -6,-12 6,-12 12,-6 12,6 6,12 -6,12 -12,6"
+        points="-16,-8 -8,-16 8,-16 16,-8 16,8 8,16 -8,16 -16,8"
         fill={colors.fill}
         stroke={colors.stroke}
         strokeWidth="2"
       />
-      {/* Inner glyph */}
-      <text
-        x="0"
-        y="4"
-        textAnchor="middle"
-        fontFamily="Press Start 2P"
-        fontSize="9"
-        fill={colors.stroke}
-      >
-        {loc.status === "locked" ? "✕" : "✓"}
-      </text>
+      {/* Icon image - 40x40 centered in the pin */}
+      <image
+        x="-20"
+        y="-20"
+        width="40"
+        height="40"
+        href={icon}
+        style={{ cursor: "pointer" }}
+      />
 
-      {/* Label */}
-      <g transform="translate(0, 32)">
+      {/* Label with icon and name */}
+      <g transform="translate(0, 48)">
         <rect
-          x="-46"
-          y="-8"
-          width="92"
-          height="18"
+          x="-60"
+          y="-10"
+          width="120"
+          height="22"
           fill="hsl(var(--background))"
           stroke="hsl(var(--border))"
-          strokeWidth="1.5"
+          strokeWidth="2"
+          rx="2"
         />
         <text
           x="0"
-          y="3"
+          y="5"
           textAnchor="middle"
           fontFamily="Press Start 2P"
-          fontSize="6"
+          fontSize="7"
           fill={hovered ? colors.fill : "hsl(var(--foreground))"}
+          fontWeight="bold"
         >
           {loc.name.toUpperCase()}
         </text>

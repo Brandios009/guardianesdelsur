@@ -231,10 +231,10 @@ export const RegisterScreen = () => {
                 <LogIn className="w-3 h-3" /> ▸ Continuar Aventura
               </h2>
               <p className="font-pixel text-[8px] text-ink-mute mb-6 normal-case" style={{ lineHeight: 2 }}>
-                Ingresa tu nombre de Guardián para retomar tu progreso
+                Ingresa tu nombre de Usuario para retomar tu progreso
               </p>
 
-              <Field label="Nombre de registro" full>
+              <Field label="Nombre de Usuario" full>
                 <input
                   required
                   autoFocus
@@ -263,11 +263,11 @@ export const RegisterScreen = () => {
                 <Sparkles className="w-3 h-3" /> ▸ Registro
               </h2>
               <p className="font-pixel text-[8px] text-ink-mute mb-6 normal-case" style={{ lineHeight: 2 }}>
-                Guarda tu progreso en el turismo Nariñense
+                Guarda tu progreso en el tour por Nariño
               </p>
 
               <div className="grid sm:grid-cols-2 gap-4">
-                <Field label="Nombre de registro" full>
+                <Field label="Nombre de Usuario" full>
                   <input required className="input-pixel" value={form.username} onChange={(e) => set("username", e.target.value)} placeholder="usuario123" />
                 </Field>
                 <Field label="Nombre">
