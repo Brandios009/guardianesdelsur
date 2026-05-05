@@ -1,11 +1,12 @@
 import { create } from "zustand";
+import { supabase } from "@/integrations/supabase/client";
 import bossLajas from "@/assets/boss-lajas.png";
 import bossCocha from "@/assets/boss-cocha.png";
 import bossGaleras from "@/assets/boss-galeras.png";
 import bossJuanambu from "@/assets/boss-juanambu.png";
 import lasLajasFoto from "@/assets/las_lajas_foto.jpg";
 
-export type Screen = "register" | "map" | "loading" | "boss" | "destiny";
+export type Screen = "register" | "map" | "loading" | "boss" | "game" | "victory" | "destiny";
 
 export type LocationKey = "lajas" | "cocha" | "galeras" | "juanambu";
 export type LocationStatus = "locked" | "unlocked";
@@ -67,6 +68,12 @@ interface GameState {
   activeLocation: LocationKey | null;
   setActiveLocation: (k: LocationKey | null) => void;
   completeLocation: (k: LocationKey) => void;
+
+  // Game state for Unity integration
+  gameUrl: string | null;
+  setGameUrl: (url: string | null) => void;
+  
+  gameVictory: () => void;
 
   hydrateProgress: (keys: LocationKey[]) => void;
   resetLocations: () => void;
@@ -234,6 +241,9 @@ export const useGame = create<GameState>((set, get) => ({
   activeLocation: null,
   setActiveLocation: (k) => set({ activeLocation: k }),
 
+  gameUrl: null,
+  setGameUrl: (url) => set({ gameUrl: url }),
+
   completeLocation: (k) => {
     const locations = get().locations.map((l) => {
       if (l.key === k) return { ...l, status: "unlocked" as LocationStatus };
@@ -241,6 +251,30 @@ export const useGame = create<GameState>((set, get) => ({
     });
     const allUnlocked = locations.every((l) => l.status === "unlocked");
     set({ locations, unlocked: allUnlocked });
+  },
+
+  gameVictory: async () => {
+    const activeKey = get().activeLocation;
+    if (activeKey) {
+      const state = get();
+      state.completeLocation(activeKey);
+      state.showNotif("¡Has vencido! El sitio ha sido desbloqueado.");
+      
+      // Guardar en Supabase si hay player
+      if (state.player) {
+        try {
+          const { error } = await supabase
+            .from("player_progress")
+            .insert({ player_id: state.player.id, location_key: activeKey });
+          if (error && !error.message.includes("duplicate")) {
+            console.error("Error guardando progreso:", error);
+          }
+        } catch (e) {
+          console.error("Error en gameVictory:", e);
+        }
+      }
+    }
+    set({ screen: "victory" });
   },
 
   hydrateProgress: (keys) => {

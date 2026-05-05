@@ -13,9 +13,8 @@ const QUOTES = [
 export const LoadingScreen = () => {
   const setScreen = useGame((s) => s.setScreen);
   const activeKey = useGame((s) => s.activeLocation);
+  const gameUrl = useGame((s) => s.gameUrl);
   const locations = useGame((s) => s.locations);
-  const completeLocation = useGame((s) => s.completeLocation);
-  const showNotif = useGame((s) => s.showNotif);
 
   const loc = locations.find((l) => l.key === activeKey);
   const [progress, setProgress] = useState(0);
@@ -27,9 +26,13 @@ export const LoadingScreen = () => {
       setProgress((p) => {
         if (p >= 100) {
           clearInterval(id);
-          // Hand off to the boss screen instead of completing immediately
+          // If gameUrl is set, go to game. Otherwise, go to boss
           setTimeout(() => {
-            setScreen("boss");
+            if (gameUrl) {
+              setScreen("game");
+            } else {
+              setScreen("boss");
+            }
           }, 700);
           return 100;
         }
@@ -38,7 +41,7 @@ export const LoadingScreen = () => {
     }, 60);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loc?.key]);
+  }, [loc?.key, gameUrl]);
 
   if (!loc) return null;
 

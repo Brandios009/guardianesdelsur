@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { useGame } from "@/store/game";
 import { HowToPlayModal } from "@/components/HowToPlayModal";
-import { Sword, HelpCircle, ArrowLeft, Skull, Heart, Flame } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Sword, HelpCircle, ArrowLeft, Flame, Heart } from "lucide-react";
 
 export const BossScreen = () => {
   const setScreen = useGame((s) => s.setScreen);
+  const setGameUrl = useGame((s) => s.setGameUrl);
   const activeKey = useGame((s) => s.activeLocation);
   const locations = useGame((s) => s.locations);
-  const completeLocation = useGame((s) => s.completeLocation);
   const showNotif = useGame((s) => s.showNotif);
-  const player = useGame((s) => s.player);
 
   const loc = locations.find((l) => l.key === activeKey);
   const [howOpen, setHowOpen] = useState(false);
@@ -18,20 +16,18 @@ export const BossScreen = () => {
   if (!loc) return null;
   const { boss } = loc;
 
-  const onStart = async () => {
+  const handleStartGame = () => {
     if (loc.status === "locked") {
-      completeLocation(loc.key);
-      showNotif(`Has vencido a ${boss.name}. El sur agradece.`);
-      if (player) {
-        const { error } = await supabase
-          .from("player_progress")
-          .insert({ player_id: player.id, location_key: loc.key });
-        if (error && !error.message.includes("duplicate")) {
-          console.error("Error guardando progreso:", error);
-        }
-      }
+      // Prepare to launch the Unity game
+      // TODO: Replace with actual game URL when available
+      // For now, use a placeholder
+      const gameUrl = `/games/${loc.key}/index.html`;
+      setGameUrl(gameUrl);
+      showNotif("Preparando batalla...");
+      setScreen("loading");
+    } else {
+      setScreen("map");
     }
-    setScreen("map");
   };
 
   return (
@@ -153,7 +149,7 @@ export const BossScreen = () => {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-              <button onClick={onStart} className="btn-gold-pixel flex-1">
+              <button onClick={handleStartGame} className="btn-gold-pixel flex-1">
                 <Sword className="w-3 h-3" /> {loc.status === "locked" ? "[ DERROTAR ]" : "[ VOLVER AL MAPA ]"}
               </button>
               <button onClick={() => setHowOpen(true)} className="btn-ghost-pixel">

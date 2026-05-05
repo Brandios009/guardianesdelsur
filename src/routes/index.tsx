@@ -5,6 +5,8 @@ import { RegisterScreen } from "@/screens/RegisterScreen";
 import { MapScreen } from "@/screens/MapScreen";
 import { LoadingScreen } from "@/screens/LoadingScreen";
 import { BossScreen } from "@/screens/BossScreen";
+import { GameScreen } from "@/screens/GameScreen";
+import { VictoryScreen } from "@/screens/VictoryScreen";
 import { ParticleCanvas } from "@/components/ParticleCanvas";
 import { WorldToggle } from "@/components/WorldToggle";
 import { Notif } from "@/components/Notif";
@@ -94,6 +96,8 @@ function GuardianesIndex() {
         {screen === "map" && <MapScreen />}
         {screen === "loading" && <LoadingScreen />}
         {screen === "boss" && <BossScreen />}
+        {screen === "game" && <GameScreen />}
+        {screen === "victory" && <VictoryScreen />}
       </main>
     </div>
   );
